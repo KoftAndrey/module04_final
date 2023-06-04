@@ -3,6 +3,7 @@
   const marbles = {
     player: 5,
     computer: 5,
+    quit: false,
     checkPoints() {
       switch (true) {
         case this.player <= 0:
@@ -22,6 +23,7 @@
     playerWins(bet) {
       this.player += bet;
       this.computer -= bet;
+      if (this.player > 10) this.player = 10;
       alert(`Раунд выигран! Ваш счет: ${this.player < 0 ? 0 : this.player}.`);
     },
     computerWins(bet) {
@@ -53,7 +55,10 @@
       marbles.player + '.');
 
         if (playerBet === null) {
-          if (confirm('Закончить игру?')) return;
+          if (confirm('Закончить игру?')) {
+            marbles.quit = true;
+            return;
+          }
         }
       } while (+playerBet < 1 || +playerBet > marbles.player ||
         isNaN(playerBet));
@@ -65,7 +70,7 @@
     };
 
     const compTurn = () => {
-      const compBet = Math.ceil(Math.random() * marbles.computer);
+      const compBet = getRandomIntInclusive(1, marbles.computer);
       const userGuess = confirm('Ставка оппонента четная?') ? 0 : 1;
 
       whoWins(compBet, userGuess) ?
@@ -76,7 +81,7 @@
 
     const playMarbles = (goesFirst, goesSecond) => {
       while (goesFirst()) {
-        if (!goesSecond()) return;
+        if (!goesSecond()) break;
       }
     };
 
@@ -95,6 +100,7 @@
       const compIndex = getRandomIntInclusive(0, 2);
 
       const playAgain = () => {
+        if (marbles.quit) return;
         if (confirm('Сыграть еще раз?')) {
           marbles.resetPoints();
           rps();
